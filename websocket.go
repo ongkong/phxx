@@ -166,13 +166,13 @@ func (w *Websocket) dial() error {
 	if err != nil {
 		return err
 	}
+	if conn == nil {
+		panic("Unexpected for conn to be nil")
+	}
 	//w.socket.Logger.Debugf("Connected conn: %+v\n\n", conn)
 	//w.socket.Logger.Debugf("Connected resp: %+v\n", resp)
 
 	w.setConn(conn)
-	w.setReconnecting(false)
-	w.Handler.onConnOpen()
-
 	return nil
 }
 
@@ -253,6 +253,9 @@ func (w *Websocket) connectionManager() {
 				case <-time.After(delay):
 				}
 				continue
+			} else {
+				w.setReconnecting(false)
+				w.Handler.onConnOpen()
 			}
 		}
 
